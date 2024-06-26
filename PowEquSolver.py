@@ -1,7 +1,7 @@
 import sys
 import pyqtgraph as pq
 import numpy as np
-from PyQt6.QtWidgets import QWidget, QLabel, QLineEdit, QTextEdit, QPushButton, QGridLayout, QComboBox, QApplication
+from PyQt6.QtWidgets import QWidget, QLabel, QLineEdit, QTextEdit, QGridLayout, QComboBox, QApplication
 from solver import solver
 
 
@@ -19,14 +19,13 @@ class MainWidget(QWidget):
         self.graph = pq.PlotWidget()
         self.line = self.graph.plot()
 
-        self.solves_types_combo = QComboBox()
         self.equation_power_combo = QComboBox()
 
         # main layout
         main_layout = QGridLayout()
         main_layout.cellRect(3, 10)
 
-        main_layout.addWidget(self.solves_types_combo, 0, 0)
+        main_layout.addWidget(QLabel("Equation's power"), 0, 0)
         main_layout.addWidget(self.equation_power_combo, 0, 1)
 
         main_layout.addWidget(QLabel("x^4+"), 1, 0)
@@ -58,14 +57,8 @@ class MainWidget(QWidget):
         # settings
         self.equation_power_combo.addItems([str(p) for p in range(1, 5)])
         self.equation_power_combo.setCurrentIndex(0)
-        self.solves_types_combo.addItems([
-            "only real solves",
-            "only complex solves",
-            "all solves"
-        ])
-        self.solves_types_combo.setCurrentIndex(2)
 
-        self.solve_text.setStyleSheet("background-color: green; font-style: bold")
+        self.solve_text.setStyleSheet("background-color: #209950; color : #250060; font-weight: bold; font-size: 35px;")
         self.solve_text.setReadOnly(True)
 
         self.graph.setFixedSize(self.size().height(), self.size().height())
@@ -111,18 +104,7 @@ class MainWidget(QWidget):
 
             res_str = ""
             for solve in res:
-                if self.solves_types_combo.currentIndex() == 0:
-                    if str(type(solve)) == "<class 'numpy.float64'>":
-                        res_str += str(solve) + '\n'
-                    else:
-                        continue
-                elif self.solves_types_combo.currentIndex() == 1:
-                    if str(type(solve)) == "<class 'complex'>":
-                        res_str += str(solve) + '\n'
-                    else:
-                        continue
-                elif self.solves_types_combo.currentIndex() == 2:
-                    res_str += str(solve) + '\n'
+                res_str += str(solve) + '\n'
 
             self.solve_text.setText(res_str)
 
@@ -159,16 +141,22 @@ class MainWidget(QWidget):
             b = 1
         if self.equation_power_combo.currentIndex() < 2:
             b = 0
-        else:
-            b = float(self.b_line.text()) if len(self.b_line.text()) > 0 else 0
+        if self.equation_power_combo.currentIndex() > 2:
+            if self.b_line.text().isnumeric():
+                b = float(self.b_line.text())
+            else:
+                b = 0
 
         # c
         if self.equation_power_combo.currentIndex() == 1:
             c = 1
         if self.equation_power_combo.currentIndex() < 1:
             c = 0
-        else:
-            c = float(self.c_line.text()) if len(self.c_line.text()) > 0 else 0
+        if self.equation_power_combo.currentIndex() > 1:
+            if self.c_line.text().isnumeric():
+                c = float(self.c_line.text())
+            else:
+                c = 0
 
         # d and e
         d = 0 if len(self.d_line.text()) == 0 else float(self.d_line.text())

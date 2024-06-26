@@ -50,6 +50,7 @@ class solver:
         k = 0
         while need_to_repeat and k <= 100:
             x0 = np.array([random(), random(), random()])
+            adder = np.zeros(3)
             try:
                 adder = - np.matmul(j1(x0), f(x0))
                 need_to_repeat = False
@@ -92,11 +93,12 @@ class solver:
         def j1(x):
             return np.linalg.inv(j(x))
 
-        x0 = np.array([random(), random(), random()])
+        x0 = np.array([random(), random(), random(), random()])
+        adder = np.zeros(4)
         need_to_repeat = True
         k = 0
         while need_to_repeat and k<100:
-            x0 = np.array([random(), random(), random()])
+            x0 = np.array([random(), random(), random(), random()])
             try:
                 adder = - np.matmul(j1(x0), f(x0))
                 need_to_repeat = False
@@ -104,7 +106,7 @@ class solver:
                 need_to_repeat = True
                 k += 1
         while np.linalg.norm(adder) >= eps:
-            x0 += adder
+            x0 = x0 + adder
             adder = - np.matmul(j1(x0), f(x0))
 
         return solver.solve_quadratic(x0[0], x0[1]) + solver.solve_quadratic(x0[2], x0[3])
