@@ -1,2 +1,2 @@
-pyinstaller --onefile main.py
+pyinstaller --onefile PowEquSolver.py
 pause

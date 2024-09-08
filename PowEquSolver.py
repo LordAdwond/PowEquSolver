@@ -15,7 +15,8 @@ class MainWidget(QWidget):
         self.d_line = QLineEdit()
         self.e_line = QLineEdit()
 
-        self.solve_text = QTextEdit()
+        self.real_roots_text = QTextEdit()
+        self.complex_roots_text = QTextEdit()
         self.graph = pq.PlotWidget()
         self.line = self.graph.plot()
 
@@ -23,7 +24,9 @@ class MainWidget(QWidget):
 
         # main layout
         main_layout = QGridLayout()
-        main_layout.cellRect(3, 10)
+        solve_layout = QGridLayout()
+        main_layout.cellRect(4, 10)
+        solve_layout.cellRect(2, 2)
 
         main_layout.addWidget(QLabel("Equation's power"), 0, 0)
         main_layout.addWidget(self.equation_power_combo, 0, 1)
@@ -38,7 +41,12 @@ class MainWidget(QWidget):
         main_layout.addWidget(self.e_line, 1, 7)
         main_layout.addWidget(QLabel("=0"), 1, 8)
 
-        main_layout.addWidget(self.solve_text, 2, 0, 1, 9)
+        solve_layout.addWidget(QLabel("Real roots"), 0, 0)
+        solve_layout.addWidget(self.real_roots_text, 1, 0)
+        solve_layout.addWidget(QLabel("Complex roots"), 0, 1)
+        solve_layout.addWidget(self.complex_roots_text, 1, 1)
+        main_layout.addLayout(solve_layout, 2, 0, 2, 9)
+
         main_layout.addWidget(self.graph, 0, 9, 3, 1)
 
         self.setLayout(main_layout)
@@ -58,8 +66,10 @@ class MainWidget(QWidget):
         self.equation_power_combo.addItems([str(p) for p in range(1, 5)])
         self.equation_power_combo.setCurrentIndex(0)
 
-        self.solve_text.setStyleSheet("background-color: #209950; color : #250060; font-weight: bold; font-size: 35px;")
-        self.solve_text.setReadOnly(True)
+        self.real_roots_text.setStyleSheet("background-color: #209950; color : #250060; font-weight: bold; font-size: 15px;")
+        self.complex_roots_text.setStyleSheet("background-color: #209950; color : #250060; font-weight: bold; font-size: 15px;")
+        self.real_roots_text.setReadOnly(True)
+        self.complex_roots_text.setReadOnly(True)
 
         self.graph.setFixedSize(self.size().height(), self.size().height())
         self.setWindowTitle("PowEquSolver - Power Equations solver")
@@ -89,31 +99,42 @@ class MainWidget(QWidget):
 
     def solve_equation(self):
         try:
-            self.solve_text.setText("")
             a, b, c, d, e = self.form_coefs()
 
-            res = []
+            res = {"real":[], "complex":[]}
             if self.equation_power_combo.currentIndex() == 0:
-                res = solver.solve_linear(d, e)
+                # res = solver.solve_linear(d, e)
+                res["real"] = res["real"] + solver.solve_linear(d, e)
             elif self.equation_power_combo.currentIndex() == 1:
-                res = solver.solve_quadratic(d, e)
+                # res = solver.solve_quadratic(d, e)
+                res["real"] = res["real"] + solver.solve_quadratic(d, e)["real"]
+                res["complex"] = res["complex"] + solver.solve_quadratic(d, e)["complex"]
             elif self.equation_power_combo.currentIndex() == 2:
-                res = solver.solve_cubic(c, d, e)
+                # res = solver.solve_cubic(c, d, e)
+                res["real"] = res["real"] + solver.solve_cubic(c, d, e)["real"]
+                res["complex"] = res["complex"] + solver.solve_cubic(c, d, e)["complex"]
             elif self.equation_power_combo.currentIndex() == 3:
-                res = solver.solve_forth(b, c, d, e)
+                # res = solver.solve_forth(b, c, d, e)
+                res["real"] = res["real"] + solver.solve_forth(b, c, d, e)["real"]
+                res["complex"] = res["complex"] + solver.solve_forth(b, c, d, e)["complex"]
 
-            res_str = ""
-            for solve in res:
-                res_str += str(solve) + '\n'
+            real_res_str = ""
+            complex_res_str = ""
+            for root in res["real"]:
+                real_res_str += str(root) + '\n'
+            for root in res["complex"]:
+                complex_res_str += str(root) + '\n'
 
-            self.solve_text.setText(res_str)
+            self.real_roots_text.setText(real_res_str)
+            self.complex_roots_text.setText(complex_res_str)
+
 
         except Exception:
-            self.solve_text.setText(f"Invalid input")
+            self.real_roots_text.setText("Invalid input")
+            self.complex_roots_text.setText("Invalid input")
 
     def plot_it(self):
         try:
-            self.solve_text.setText("")
             self.line.clear()
             a, b, c, d, e = self.form_coefs()
 
@@ -122,7 +143,8 @@ class MainWidget(QWidget):
             self.line = self.graph.plot(x, y)
 
         except Exception:
-            self.solve_text.setText(f"Invalid input")
+            self.real_roots_text.setText("Invalid input")
+            self.complex_roots_text.setText("Invalid input")
 
     def form_coefs(self):
         a = 0
