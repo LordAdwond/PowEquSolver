@@ -3,6 +3,7 @@ import pyqtgraph as pq
 import numpy as np
 from PyQt6.QtWidgets import QWidget, QLabel, QLineEdit, QTextEdit, QGridLayout, QComboBox, QApplication
 from solver import solver
+from processing import processing
 
 
 class MainWidget(QWidget):
@@ -103,18 +104,14 @@ class MainWidget(QWidget):
 
             res = {"real":[], "complex":[]}
             if self.equation_power_combo.currentIndex() == 0:
-                # res = solver.solve_linear(d, e)
                 res["real"] = res["real"] + solver.solve_linear(d, e)
             elif self.equation_power_combo.currentIndex() == 1:
-                # res = solver.solve_quadratic(d, e)
                 res["real"] = res["real"] + solver.solve_quadratic(d, e)["real"]
                 res["complex"] = res["complex"] + solver.solve_quadratic(d, e)["complex"]
             elif self.equation_power_combo.currentIndex() == 2:
-                # res = solver.solve_cubic(c, d, e)
                 res["real"] = res["real"] + solver.solve_cubic(c, d, e)["real"]
                 res["complex"] = res["complex"] + solver.solve_cubic(c, d, e)["complex"]
             elif self.equation_power_combo.currentIndex() == 3:
-                # res = solver.solve_forth(b, c, d, e)
                 res["real"] = res["real"] + solver.solve_forth(b, c, d, e)["real"]
                 res["complex"] = res["complex"] + solver.solve_forth(b, c, d, e)["complex"]
 
@@ -165,7 +162,8 @@ class MainWidget(QWidget):
             b = 0
         if self.equation_power_combo.currentIndex() > 2:
             if self.b_line.text().isnumeric():
-                b = float(self.b_line.text())
+                # b = float(self.b_line.text())
+                b = processing.from_string(self.b_line.text())
             else:
                 b = 0
 
@@ -176,13 +174,16 @@ class MainWidget(QWidget):
             c = 0
         if self.equation_power_combo.currentIndex() > 1:
             if self.c_line.text().isnumeric():
-                c = float(self.c_line.text())
+                # c = float(self.c_line.text())
+                c = processing.from_string(self.c_line.text())
             else:
                 c = 0
 
         # d and e
-        d = 0 if len(self.d_line.text()) == 0 else float(self.d_line.text())
-        e = 0 if len(self.e_line.text()) == 0 else float(self.e_line.text())
+        # d = 0 if len(self.d_line.text()) == 0 else float(self.d_line.text())
+        # e = 0 if len(self.e_line.text()) == 0 else float(self.e_line.text())
+        d = 0 if len(self.d_line.text()) == 0 else processing.from_string(self.d_line.text())
+        e = 0 if len(self.e_line.text()) == 0 else processing.from_string(self.e_line.text())
 
         return a, b, c, d, e
 

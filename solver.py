@@ -54,7 +54,7 @@ class solver:
         x0 = np.array([random(), random(), random()])
         need_to_repeat = True
         k = 0
-        while need_to_repeat and k <= 500:
+        while need_to_repeat and k <= 750:
             x0 = np.array([random(), random(), random()])
             adder = np.zeros(3)
             try:
@@ -105,7 +105,7 @@ class solver:
         adder = np.zeros(4)
         need_to_repeat = True
         k = 0
-        while need_to_repeat and k <= 500:
+        while need_to_repeat and k <= 750:
             x0 = np.array([random(), random(), random(), random()])
             try:
                 adder = - np.matmul(j1(x0), f(x0))
